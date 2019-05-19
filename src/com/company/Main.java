@@ -7,7 +7,7 @@ public class Main {
 //        int numOfVertices = Integer.parseInt(args[0]);
 //        int numOfEdges = Integer.parseInt(args[1]);
 //        int maxCapacity = Integer.parseInt(args[2]);
-        int numOfVertices = 3;
+        int numOfVertices = 10;
         int numOfEdges = 3;
         int maxCapacity = 10;
 

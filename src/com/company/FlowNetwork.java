@@ -7,8 +7,12 @@ import edu.princeton.cs.algs4.*;
 public class FlowNetwork {
     private static final String NEWLINE = System.getProperty("line.separator");
 
+    private final int idSource = 0;
+    private final int idSecondVertex = 1;
     private final int V;
     private int E;
+    private final int idSink;
+    private final int networkSizeFactor;
     private HashSet<FlowEdge>[] adj;
 
     /**
@@ -20,6 +24,8 @@ public class FlowNetwork {
         if (V < 0) throw new IllegalArgumentException("Number of vertices in a Graph must be nonnegative");
         this.V = V;
         this.E = 0;
+        this.idSink = V-1;
+        this.networkSizeFactor = (int)Math.pow(V, 1/3) + 1;
         adj = new HashSet[V];
         for (int v = 0; v < V; v++)
             adj[v] = new HashSet<>();
@@ -29,79 +35,64 @@ public class FlowNetwork {
         this(V);
 
         // Generate random number of edges from source to random vertices
-        int maxNumOfEdgesFromSource = (int)Math.pow(V, 1/3) + 1;
-        int numOfEdgesFromSource = StdRandom.uniform(1, maxNumOfEdgesFromSource);
+        int numOfEdgesFromSource = StdRandom.uniform(1, networkSizeFactor);
         HashSet<Integer> generated = new HashSet<>();
         while (generated.size() < numOfEdgesFromSource) {
-            int next = StdRandom.uniform(1, V-1);
+            int next = StdRandom.uniform(idSecondVertex, V-1);
             generated.add(next);
         }
         for (int w : generated) {
             double capacity = StdRandom.uniform(1, maxRandom);
-            addEdge(new FlowEdge(0, w, capacity));
-        }
-        // Add hardcoded link for 0->1 vertices if not created (algorithm workaround)
-        if (!isAdjacency(0, 1)) {
-            double capacity = StdRandom.uniform(1, maxRandom);
-            addEdge(new FlowEdge(0, 1, capacity));
+            addEdge(new FlowEdge(idSource, w, capacity));
         }
 
         // Generate random number of edges from random vertices to sink
-        int maxNumOfEdgesToSink = (int)Math.pow(V, 1/3) + 1;
-        int numOfEdgesToSink = StdRandom.uniform(1, maxNumOfEdgesToSink);
+        int numOfEdgesToSink = StdRandom.uniform(1, networkSizeFactor);
         generated.clear();
         while (generated.size() < numOfEdgesToSink) {
-            int next = StdRandom.uniform(1, V-1);
+            int next = StdRandom.uniform(idSecondVertex, V-1);
             generated.add(next);
         }
         for (int v : generated) {
             double capacity = StdRandom.uniform(1, maxRandom);
-            addEdge(new FlowEdge(v, V-1, capacity));
+            addEdge(new FlowEdge(v, idSink, capacity));
         }
 
-        for (int v = 2; v < V-1; ++v) {
+        // Generate connections inside flow network
+        for (int vertex = idSecondVertex; vertex < idSink; ++vertex) {
+            // Generate random input edges for every middle vertex (from vertices with lower id)
+            int maxNumOfInputEdges = Math.min(vertex, networkSizeFactor);
+            int numOfInputEdges = StdRandom.uniform(1, maxNumOfInputEdges+1);
+            generated.clear();
+            while (generated.size() < numOfInputEdges) {
+                int next = StdRandom.uniform(idSource, vertex);
+                if (isAdjacency(next, vertex)) {
+                    numOfInputEdges-=1;
+                    continue;
+                }
+                generated.add(next);
+            }
+            for (int v : generated) {
+                double capacity = StdRandom.uniform(1, maxRandom);
+                addEdge(new FlowEdge(v, vertex, capacity));
+            }
 
-
-
-
-        }
-
-
-
-
-
-
-
-
-//        for (int i = 0; i < E; i++) {
-//            int v = StdRandom.uniform(V-1);
-//            int w = StdRandom.uniform(v+1, V);
-//            double capacity = StdRandom.uniform(1, maxRandom);
-//            addEdge(new FlowEdge(v, w, capacity));
-//        }
-    }
-
-    /**
-     * Initializes a flow network from an input stream.
-     * The format is the number of vertices <em>V</em>,
-     * followed by the number of edges <em>E</em>,
-     * followed by <em>E</em> pairs of vertices and edge capacities,
-     * with each entry separated by whitespace.
-     * @param in the input stream
-     * @throws IllegalArgumentException if the endpoints of any edge are not in prescribed range
-     * @throws IllegalArgumentException if the number of vertices or edges is negative
-     */
-    public FlowNetwork(In in) {
-        this(in.readInt());
-        int E = in.readInt();
-        if (E < 0) throw new IllegalArgumentException("number of edges must be nonnegative");
-        for (int i = 0; i < E; i++) {
-            int v = in.readInt();
-            int w = in.readInt();
-            validateVertex(v);
-            validateVertex(w);
-            double capacity = in.readDouble();
-            addEdge(new FlowEdge(v, w, capacity));
+            // Generate random output edges from every middle vertex (to vertices with higher id)
+            int maxNumOfOutputEdges = Math.min(networkSizeFactor, V - vertex - 1);
+            int numOfOutputEdges = StdRandom.uniform(1, maxNumOfOutputEdges + 1);
+            generated.clear();
+            while (generated.size() < numOfOutputEdges) {
+                int next = StdRandom.uniform(vertex+1, V);
+                if (isAdjacency(vertex, next)) {
+                    numOfOutputEdges--;
+                    continue;
+                }
+                generated.add(next);
+            }
+            for (int w : generated) {
+                double capacity = StdRandom.uniform(1, maxRandom);
+                addEdge(new FlowEdge(vertex, w, capacity));
+            }
         }
     }
 
