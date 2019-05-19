@@ -2,17 +2,14 @@ package com.company;
 
 import java.util.HashSet;
 
-import edu.princeton.cs.algs4.Bag;
-import edu.princeton.cs.algs4.FlowEdge;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.*;
 
 public class FlowNetwork {
     private static final String NEWLINE = System.getProperty("line.separator");
 
     private final int V;
     private int E;
-    private Bag<FlowEdge>[] adj;
+    private HashSet<FlowEdge>[] adj;
 
     /**
      * Initializes an empty flow network with {@code V} vertices and 0 edges.
@@ -23,42 +20,65 @@ public class FlowNetwork {
         if (V < 0) throw new IllegalArgumentException("Number of vertices in a Graph must be nonnegative");
         this.V = V;
         this.E = 0;
-        adj = (Bag<FlowEdge>[]) new Bag[V];
+        adj = new HashSet[V];
         for (int v = 0; v < V; v++)
-            adj[v] = new Bag<FlowEdge>();
+            adj[v] = new HashSet<>();
     }
 
-    public FlowNetwork(int V, int E, int R) {
+    public FlowNetwork(int V, int E, int maxRandom) {
         this(V);
 
         // Generate random number of edges from source to random vertexes
-        int numOfEdgesFromSource = StdRandom.uniform(1, (int)Math.pow(V, 1/3) + 1);
+        int maxNumOfEdgesFromSource = (int)Math.pow(V, 1/3) + 1;
+        int numOfEdgesFromSource = StdRandom.uniform(1, maxNumOfEdgesFromSource);
         HashSet<Integer> generated = new HashSet<>();
         while (generated.size() < numOfEdgesFromSource) {
-            int next = StdRandom.uniform(1, V-1);
+            int next = StdRandom.uniform(1, V-1); // Omit vertex id=1
             generated.add(next);
         }
         for (int w : generated) {
-            double capacity = StdRandom.uniform(1, R);
+            double capacity = StdRandom.uniform(1, maxRandom);
             addEdge(new FlowEdge(0, w, capacity));
         }
 
+        // Add hardcoded link for 0->1 vertexes (algorithm workaround)
+//        if not 0->1 {
+//            double capacity = StdRandom.uniform(1, maxRandom);
+//            addEdge(new FlowEdge(0, 1, capacity));
+//        }
+
+
         // Generate random number of edges from random vertexes to sink
-        int numOfEdgesToSink = StdRandom.uniform(1, (int)Math.pow(V, 1/3) + 1);
+        int maxNumOfEdgesToSink = (int)Math.pow(V, 1/3) + 1;
+        int numOfEdgesToSink = StdRandom.uniform(1, maxNumOfEdgesToSink);
         generated.clear();
         while (generated.size() < numOfEdgesToSink) {
             int next = StdRandom.uniform(1, V-1);
             generated.add(next);
         }
         for (int v : generated) {
-            double capacity = StdRandom.uniform(1, R);
+            double capacity = StdRandom.uniform(1, maxRandom);
             addEdge(new FlowEdge(v, V-1, capacity));
         }
+
+        for (int v = 2; v < V-1; ++v) {
+
+
+
+
+        }
+
+
+
+
+
+
+
 
         for (int i = 0; i < E; i++) {
             int v = StdRandom.uniform(V-1);
             int w = StdRandom.uniform(v+1, V);
-            double capacity = StdRandom.uniform(1, R);
+            double capacity = StdRandom.uniform(1, maxRandom);
             addEdge(new FlowEdge(v, w, capacity));
         }
     }
