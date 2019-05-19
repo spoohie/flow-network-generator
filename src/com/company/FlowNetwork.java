@@ -28,27 +28,25 @@ public class FlowNetwork {
     public FlowNetwork(int V, int E, int maxRandom) {
         this(V);
 
-        // Generate random number of edges from source to random vertexes
+        // Generate random number of edges from source to random vertices
         int maxNumOfEdgesFromSource = (int)Math.pow(V, 1/3) + 1;
         int numOfEdgesFromSource = StdRandom.uniform(1, maxNumOfEdgesFromSource);
         HashSet<Integer> generated = new HashSet<>();
         while (generated.size() < numOfEdgesFromSource) {
-            int next = StdRandom.uniform(1, V-1); // Omit vertex id=1
+            int next = StdRandom.uniform(1, V-1);
             generated.add(next);
         }
         for (int w : generated) {
             double capacity = StdRandom.uniform(1, maxRandom);
             addEdge(new FlowEdge(0, w, capacity));
         }
+        // Add hardcoded link for 0->1 vertices if not created (algorithm workaround)
+        if (!isAdjacency(0, 1)) {
+            double capacity = StdRandom.uniform(1, maxRandom);
+            addEdge(new FlowEdge(0, 1, capacity));
+        }
 
-        // Add hardcoded link for 0->1 vertexes (algorithm workaround)
-//        if not 0->1 {
-//            double capacity = StdRandom.uniform(1, maxRandom);
-//            addEdge(new FlowEdge(0, 1, capacity));
-//        }
-
-
-        // Generate random number of edges from random vertexes to sink
+        // Generate random number of edges from random vertices to sink
         int maxNumOfEdgesToSink = (int)Math.pow(V, 1/3) + 1;
         int numOfEdgesToSink = StdRandom.uniform(1, maxNumOfEdgesToSink);
         generated.clear();
@@ -75,12 +73,12 @@ public class FlowNetwork {
 
 
 
-        for (int i = 0; i < E; i++) {
-            int v = StdRandom.uniform(V-1);
-            int w = StdRandom.uniform(v+1, V);
-            double capacity = StdRandom.uniform(1, maxRandom);
-            addEdge(new FlowEdge(v, w, capacity));
-        }
+//        for (int i = 0; i < E; i++) {
+//            int v = StdRandom.uniform(V-1);
+//            int w = StdRandom.uniform(v+1, V);
+//            double capacity = StdRandom.uniform(1, maxRandom);
+//            addEdge(new FlowEdge(v, w, capacity));
+//        }
     }
 
     /**
@@ -145,6 +143,15 @@ public class FlowNetwork {
         E++;
     }
 
+    public boolean isAdjacency(int v, int w) {
+        for (FlowEdge e : adj(v)) {
+            if (e.to() == w) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Returns the edges incident on vertex {@code v} (includes both edges pointing to
      * and from {@code v}).
@@ -159,7 +166,7 @@ public class FlowNetwork {
 
     // return list of all edges - excludes self loops
     public Iterable<FlowEdge> edges() {
-        Bag<FlowEdge> list = new Bag<FlowEdge>();
+        HashSet<FlowEdge> list = new HashSet<>();
         for (int v = 0; v < V; v++)
             for (FlowEdge e : adj(v)) {
                 if (e.to() != v)
