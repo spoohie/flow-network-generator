@@ -7,14 +7,13 @@ public class Main {
 //        int numOfVertices = Integer.parseInt(args[0]);
 //        int numOfEdges = Integer.parseInt(args[1]);
 //        int maxCapacity = Integer.parseInt(args[2]);
-        int numOfVertices = 10;
-        int numOfEdges = 3;
+        int numOfVertices = 1000;
         int maxCapacity = 10;
 
-        if (numOfVertices < 0 || numOfEdges < 0 || maxCapacity < 0)
-            throw new IllegalArgumentException("Number of edges must be nonnegative");
+        if (numOfVertices < 2 || maxCapacity < 1)
+            throw new IllegalArgumentException("Invalid input parameters");
 
-        FlowNetwork flowNetwork = new FlowNetwork(numOfVertices, numOfEdges, maxCapacity);
+        FlowNetwork flowNetwork = new FlowNetwork(numOfVertices, maxCapacity);
         int idSource = 0;
         int idSink = flowNetwork.V() - 1;
         StdOut.println(flowNetwork);

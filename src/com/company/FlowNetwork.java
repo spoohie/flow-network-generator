@@ -31,7 +31,7 @@ public class FlowNetwork {
             adj[v] = new HashSet<>();
     }
 
-    public FlowNetwork(int V, int E, int maxRandom) {
+    public FlowNetwork(int V, int maxRandom) {
         this(V);
 
         // Generate random number of edges from source to random vertices
