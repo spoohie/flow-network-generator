@@ -3,7 +3,6 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.FlowEdge;
 
 public class FlowNetworkGenerator {
-
     private FlowNetwork flowNetwork;
     private FordFulkerson maxFlow;
 
@@ -25,13 +24,10 @@ public class FlowNetworkGenerator {
                     StdOut.println("   " + e);
             }
         }
-
         StdOut.println("Max flow value = " +  maxFlow.value());
-
     }
 
     public void generateOutputFile() {
-
     }
 
     public static void main(String[] args) {
@@ -44,7 +40,6 @@ public class FlowNetworkGenerator {
         FlowNetworkGenerator flowNetworkGenerator = new FlowNetworkGenerator();
 
         flowNetworkGenerator.generate(numOfVertices, maxCapacity);
-
         flowNetworkGenerator.presentResults();
         flowNetworkGenerator.generateOutputFile();
     }
