@@ -13,8 +13,8 @@ public class FlowNetwork {
     private final int idSecondVertex = 1;
     private final int V;
     private int E;
+    private int networkSizeFactor = 1;
     private final int idSink;
-    private final int networkSizeFactor;
     private HashSet<FlowEdge>[] adj;
 
     /**
@@ -23,21 +23,20 @@ public class FlowNetwork {
      * @throws IllegalArgumentException if {@code V < 0}
      */
     public FlowNetwork(int V) {
-        if (V < 0) throw new IllegalArgumentException("Number of vertices in a Graph must be nonnegative");
         this.V = V;
         this.E = 0;
         this.idSink = V-1;
-        this.networkSizeFactor = (int)Math.pow(V, 1/3) + 1;
         adj = new HashSet[V];
         for (int v = 0; v < V; v++)
             adj[v] = new HashSet<>();
     }
 
-    public FlowNetwork(int V, int maxRandom) {
+    public FlowNetwork(int V, int netSize, int maxRandom) {
         this(V);
+        this.networkSizeFactor = netSize;
 
         // Generate random number of edges from source to random vertices
-        int numOfEdgesFromSource = StdRandom.uniform(1, networkSizeFactor);
+        int numOfEdgesFromSource = StdRandom.uniform(1, networkSizeFactor + 1);
         HashSet<Integer> generated = new HashSet<>();
         while (generated.size() < numOfEdgesFromSource) {
             int next = StdRandom.uniform(idSecondVertex, V-1);
@@ -49,7 +48,7 @@ public class FlowNetwork {
         }
 
         // Generate random number of edges from random vertices to sink
-        int numOfEdgesToSink = StdRandom.uniform(1, networkSizeFactor);
+        int numOfEdgesToSink = StdRandom.uniform(1, networkSizeFactor + 1);
         generated.clear();
         while (generated.size() < numOfEdgesToSink) {
             int next = StdRandom.uniform(idSecondVertex, V-1);
@@ -63,7 +62,8 @@ public class FlowNetwork {
         // Generate connections inside flow network
         for (int vertex = idSecondVertex; vertex < idSink; ++vertex) {
             // Generate random input edges for every middle vertex (from vertices with lower id)
-            int maxNumOfInputEdges = Math.min(vertex, networkSizeFactor);
+            int maxNumOfInputEdges = Math.min(vertex, networkSizeFactor + 1);
+//            int maxNumOfInputEdges = StdRandom.uniform()
             int numOfInputEdges = StdRandom.uniform(1, maxNumOfInputEdges + 1);
             generated.clear();
             while (generated.size() < numOfInputEdges) {
@@ -157,17 +157,6 @@ public class FlowNetwork {
         return adj[v];
     }
 
-    // return list of all edges - excludes self loops
-    public Iterable<FlowEdge> edges() {
-        LinkedHashSet<FlowEdge> list = new LinkedHashSet<>();
-        for (int v = 0; v < V; v++)
-            for (FlowEdge e : adj(v)) {
-                if (e.to() != v)
-                    list.add(e);
-            }
-        return list;
-    }
-
     /**
      * Returns a string representation of the flow network.
      * This method takes time proportional to <em>E</em> + <em>V</em>.
@@ -205,5 +194,16 @@ public class FlowNetwork {
             listOfEdges.add(e.from() + " " + e.to() + " " + e.capacity());
         }
         return listOfEdges;
+    }
+
+    // return list of all edges - excludes self loops
+    public Iterable<FlowEdge> edges() {
+        LinkedHashSet<FlowEdge> list = new LinkedHashSet<>();
+        for (int v = 0; v < V; v++)
+            for (FlowEdge e : adj(v)) {
+                if (e.to() != v)
+                    list.add(e);
+            }
+        return list;
     }
 }

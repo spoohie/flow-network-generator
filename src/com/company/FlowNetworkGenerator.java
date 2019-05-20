@@ -9,9 +9,14 @@ public class FlowNetworkGenerator {
     private FlowNetwork flowNetwork;
     private FordFulkerson maxFlow;
 
-    private void generate(int numOfVertices, int maxCapacity) {
-        flowNetwork = new FlowNetwork(numOfVertices, maxCapacity);
+    private void generate(int numOfVertices, int netSize, int maxCapacity) {
+        long startTime = System.nanoTime();
+        flowNetwork = new FlowNetwork(numOfVertices, netSize, maxCapacity);
+        long middleTime = System.nanoTime();
         maxFlow = new FordFulkerson(flowNetwork);
+        long endTime = System.nanoTime();
+        System.out.println("Time of generation = " + (middleTime-startTime)/1e6 + "ms");
+        System.out.println("Time of algorithm = " + (endTime-middleTime)/1e6 + "ms");
     }
 
     private void presentResults() {
@@ -41,14 +46,15 @@ public class FlowNetworkGenerator {
 
     public static void main(String[] args) {
         int numOfVertices = Integer.parseInt(args[0]);
-        int maxCapacity = Integer.parseInt(args[1]);
+        int netSize= Integer.parseInt(args[1]);
+        int maxCapacity = Integer.parseInt(args[2]);
 
-        if (numOfVertices < 2 || maxCapacity < 1)
+        if (numOfVertices < 2 || netSize < 1 || maxCapacity < 1)
             throw new IllegalArgumentException("Invalid input parameters");
 
         FlowNetworkGenerator flowNetworkGenerator = new FlowNetworkGenerator();
 
-        flowNetworkGenerator.generate(numOfVertices, maxCapacity);
+        flowNetworkGenerator.generate(numOfVertices, netSize, maxCapacity);
         flowNetworkGenerator.presentResults();
         flowNetworkGenerator.generateOutputFile();
     }
