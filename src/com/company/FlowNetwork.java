@@ -69,7 +69,7 @@ public class FlowNetwork {
             while (generated.size() < numOfInputEdges) {
                 int next = StdRandom.uniform(idSource, vertex);
                 if (isAdjacency(next, vertex)) {
-                    numOfInputEdges-=1;
+                    numOfInputEdges--;
                     continue;
                 }
                 generated.add(next);
@@ -185,6 +185,17 @@ public class FlowNetwork {
             s.append(NEWLINE);
         }
         return s.toString();
+    }
+
+    public ArrayList<String> presentMaxFlowPath() {
+        ArrayList<String> listOfPaths = new ArrayList<>();
+        for (int v = 0; v < V(); v++) {
+            for (FlowEdge e : adj(v)) {
+                if ((v == e.from()) && e.flow() > 0)
+                    listOfPaths.add("   " + e);
+            }
+        }
+        return listOfPaths;
     }
 
     public ArrayList<String> formatToFile() {

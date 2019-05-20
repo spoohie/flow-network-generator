@@ -1,7 +1,5 @@
 package com.company;
 
-import edu.princeton.cs.algs4.FlowEdge;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -17,13 +15,12 @@ public class FlowNetworkGenerator {
     }
 
     private void presentResults() {
+        ArrayList<String> listOfPaths= flowNetwork.presentMaxFlowPath();
+
         System.out.print(flowNetwork);
-        System.out.print("Max flow from source to sink:\n");
-        for (int v = 0; v < flowNetwork.V(); v++) {
-            for (FlowEdge e : flowNetwork.adj(v)) {
-                if ((v == e.from()) && e.flow() > 0)
-                    System.out.print("   " + e + "\n");
-            }
+        System.out.print("Flow paths from source to sink:\n");
+        for (String s : listOfPaths) {
+            System.out.println(s);
         }
         System.out.print("Max flow value = " +  maxFlow.value());
     }
@@ -40,7 +37,6 @@ public class FlowNetworkGenerator {
         catch (FileNotFoundException e) {
             System.out.print("Cannot create or edit existing file. Aborting.");
         }
-
     }
 
     public static void main(String[] args) {
