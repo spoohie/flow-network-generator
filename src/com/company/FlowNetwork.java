@@ -1,6 +1,8 @@
 package com.company;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import edu.princeton.cs.algs4.*;
 
@@ -62,7 +64,7 @@ public class FlowNetwork {
         for (int vertex = idSecondVertex; vertex < idSink; ++vertex) {
             // Generate random input edges for every middle vertex (from vertices with lower id)
             int maxNumOfInputEdges = Math.min(vertex, networkSizeFactor);
-            int numOfInputEdges = StdRandom.uniform(1, maxNumOfInputEdges+1);
+            int numOfInputEdges = StdRandom.uniform(1, maxNumOfInputEdges + 1);
             generated.clear();
             while (generated.size() < numOfInputEdges) {
                 int next = StdRandom.uniform(idSource, vertex);
@@ -157,7 +159,7 @@ public class FlowNetwork {
 
     // return list of all edges - excludes self loops
     public Iterable<FlowEdge> edges() {
-        HashSet<FlowEdge> list = new HashSet<>();
+        LinkedHashSet<FlowEdge> list = new LinkedHashSet<>();
         for (int v = 0; v < V; v++)
             for (FlowEdge e : adj(v)) {
                 if (e.to() != v)
@@ -183,5 +185,14 @@ public class FlowNetwork {
             s.append(NEWLINE);
         }
         return s.toString();
+    }
+
+    public ArrayList<String> formatToFile() {
+        ArrayList<String> listOfEdges = new ArrayList<>();
+        Iterable<FlowEdge> edges = edges();
+        for (FlowEdge e : edges) {
+            listOfEdges.add(e.from() + " " + e.to() + " " + e.capacity());
+        }
+        return listOfEdges;
     }
 }

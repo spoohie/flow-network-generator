@@ -1,33 +1,46 @@
 package com.company;
-import edu.princeton.cs.algs4.StdOut;
+
 import edu.princeton.cs.algs4.FlowEdge;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
 
 public class FlowNetworkGenerator {
     private FlowNetwork flowNetwork;
     private FordFulkerson maxFlow;
 
-    public void generate(int numOfVertices, int maxCapacity) {
+    private void generate(int numOfVertices, int maxCapacity) {
         flowNetwork = new FlowNetwork(numOfVertices, maxCapacity);
-        int idSource = 0;
-        int idSink = flowNetwork.V() - 1;
-
-        maxFlow = new FordFulkerson(flowNetwork, idSource, idSink);
+        maxFlow = new FordFulkerson(flowNetwork);
     }
 
-    public void presentResults() {
-        StdOut.println(flowNetwork);
-
-        StdOut.println("Max flow from source to sink");
+    private void presentResults() {
+        System.out.print(flowNetwork);
+        System.out.print("Max flow from source to sink:\n");
         for (int v = 0; v < flowNetwork.V(); v++) {
             for (FlowEdge e : flowNetwork.adj(v)) {
                 if ((v == e.from()) && e.flow() > 0)
-                    StdOut.println("   " + e);
+                    System.out.print("   " + e + "\n");
             }
         }
-        StdOut.println("Max flow value = " +  maxFlow.value());
+        System.out.print("Max flow value = " +  maxFlow.value());
     }
 
-    public void generateOutputFile() {
+    private void generateOutputFile() {
+        ArrayList<String> listOfEdges = flowNetwork.formatToFile();
+
+        try (PrintStream out = new PrintStream(new FileOutputStream("out.txt"))) {
+            out.println(maxFlow.value());
+            for (String s : listOfEdges) {
+                out.println(s);
+            }
+        }
+        catch (FileNotFoundException e) {
+            System.out.print("Cannot create or edit existing file. Aborting.");
+        }
+
     }
 
     public static void main(String[] args) {

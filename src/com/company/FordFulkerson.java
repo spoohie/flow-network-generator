@@ -2,7 +2,6 @@ package com.company;
 
 import edu.princeton.cs.algs4.FlowEdge;
 import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.StdOut;
 
 /******************************************************************************
  *  Compilation:  javac FordFulkerson.java
@@ -45,7 +44,9 @@ import edu.princeton.cs.algs4.StdOut;
 public class FordFulkerson {
     private static final double FLOATING_POINT_EPSILON = 1E-11;
 
+    private final int s = 0;
     private final int V;          // number of vertices
+    private final int t;
     private boolean[] marked;     // marked[v] = true iff s->v path in residual graph
     private FlowEdge[] edgeTo;    // edgeTo[v] = last edge on shortest residual s->v path
     private double value;         // current value of max flow
@@ -62,8 +63,9 @@ public class FordFulkerson {
      * @throws IllegalArgumentException if {@code s == t}
      * @throws IllegalArgumentException if initial flow is infeasible
      */
-    public FordFulkerson(FlowNetwork G, int s, int t) {
+    public FordFulkerson(FlowNetwork G) {
         V = G.V();
+        this.t = V-1;
         validate(s);
         validate(t);
         if (s == t) throw new IllegalArgumentException("Source equals sink");
@@ -152,7 +154,6 @@ public class FordFulkerson {
         // is there an augmenting path?
         return marked[t];
     }
-
 
     // return excess flow at vertex v
     private double excess(FlowNetwork G, int v) {
