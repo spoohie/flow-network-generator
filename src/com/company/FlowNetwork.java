@@ -8,13 +8,12 @@ import edu.princeton.cs.algs4.*;
 
 public class FlowNetwork {
     private static final String NEWLINE = System.getProperty("line.separator");
-
     private final int idSource = 0;
     private final int idSecondVertex = 1;
+    private final int idSink;
     private final int V;
     private int E;
     private int networkSizeFactor = 1;
-    private final int idSink;
     private HashSet<FlowEdge>[] adj;
 
     /**
@@ -43,7 +42,7 @@ public class FlowNetwork {
             generated.add(next);
         }
         for (int w : generated) {
-            double capacity = StdRandom.uniform(1, maxRandom);
+            double capacity = StdRandom.uniform(1, maxRandom + 1);
             addEdge(new FlowEdge(idSource, w, capacity));
         }
 
@@ -55,7 +54,7 @@ public class FlowNetwork {
             generated.add(next);
         }
         for (int v : generated) {
-            double capacity = StdRandom.uniform(1, maxRandom);
+            double capacity = StdRandom.uniform(1, maxRandom + 1);
             addEdge(new FlowEdge(v, idSink, capacity));
         }
 
@@ -63,7 +62,6 @@ public class FlowNetwork {
         for (int vertex = idSecondVertex; vertex < idSink; ++vertex) {
             // Generate random input edges for every middle vertex (from vertices with lower id)
             int maxNumOfInputEdges = Math.min(vertex, networkSizeFactor + 1);
-//            int maxNumOfInputEdges = StdRandom.uniform()
             int numOfInputEdges = StdRandom.uniform(1, maxNumOfInputEdges + 1);
             generated.clear();
             while (generated.size() < numOfInputEdges) {
@@ -75,7 +73,7 @@ public class FlowNetwork {
                 generated.add(next);
             }
             for (int v : generated) {
-                double capacity = StdRandom.uniform(1, maxRandom);
+                double capacity = StdRandom.uniform(1, maxRandom + 1);
                 addEdge(new FlowEdge(v, vertex, capacity));
             }
 
@@ -92,7 +90,7 @@ public class FlowNetwork {
                 generated.add(next);
             }
             for (int w : generated) {
-                double capacity = StdRandom.uniform(1, maxRandom);
+                double capacity = StdRandom.uniform(1, maxRandom + 1);
                 addEdge(new FlowEdge(vertex, w, capacity));
             }
         }
@@ -176,7 +174,7 @@ public class FlowNetwork {
         return s.toString();
     }
 
-    public ArrayList<String> presentMaxFlowPath() {
+    public ArrayList<String> presentMaxFlowPaths() {
         ArrayList<String> listOfPaths = new ArrayList<>();
         for (int v = 0; v < V(); v++) {
             for (FlowEdge e : adj(v)) {
@@ -191,7 +189,7 @@ public class FlowNetwork {
         ArrayList<String> listOfEdges = new ArrayList<>();
         Iterable<FlowEdge> edges = edges();
         for (FlowEdge e : edges) {
-            listOfEdges.add(e.from() + " " + e.to() + " " + e.capacity());
+            listOfEdges.add(e.from() + " " + e.to() + " " + (int)e.capacity());
         }
         return listOfEdges;
     }
